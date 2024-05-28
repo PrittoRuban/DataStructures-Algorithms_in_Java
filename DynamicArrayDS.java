@@ -113,3 +113,6 @@ public class DynamicArrayDS {
         System.out.println("Empty: " + array.isEmpty());
     }
 }
+
+
+// T.C = O(n) for add(), insert(), delete(), search() methods

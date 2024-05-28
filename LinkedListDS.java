@@ -41,3 +41,6 @@ public class LinkedListDS {
         
     }
 }
+
+// T.C = O(1) for addFirst(), addLast(), removeFirst(), removeLast()
+// T.C = O(n) for add(), remove() methods

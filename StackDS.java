@@ -24,3 +24,5 @@ public class StackDS {
         System.out.println("Stack: " + stack);
     }
 }
+
+// T.C = O(1) for push(), pop(), peek(), search(), empty()

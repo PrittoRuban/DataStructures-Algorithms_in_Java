@@ -27,3 +27,6 @@ public class QueueDS {
 
     }
 }
+
+
+// T.C = O(1) for offer() and poll() methods

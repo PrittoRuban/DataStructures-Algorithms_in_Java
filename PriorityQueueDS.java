@@ -29,3 +29,7 @@ public class PriorityQueueDS {
         System.out.println(queue); // [80, 40, 60, 20]
     }
 }
+
+
+// T.C = O(log n) for offer() and poll() 
+// T.C = O(1) for peek() and isEmpty() methods
