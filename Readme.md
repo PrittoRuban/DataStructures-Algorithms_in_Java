@@ -26,3 +26,16 @@
    - Tree Traversal
   
 </div>
+
+
+### What is data Structure?
+ - Simply, A named location that can be used to store and organize data.
+ - Example; 
+    - Consider a list of fruits
+    - The list fruits is used to store and organize data
+
+### What is Algorithms? 
+
+- An algorithm is a set of step-by-step instructions designed to perform a specific task or solve a particular problem.
+- Example;
+  - A navigation system, such as Google Maps, uses algorithms to find the shortest or fastest route from one location to another
