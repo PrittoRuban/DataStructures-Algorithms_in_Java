@@ -1,44 +1,3 @@
-# Learn Data Structures and Algorithms using Java
-
-<div align="left"> 
-
-## What will you learn?
-- Basic Data Structures
-   - Arrays
-   - Linked List
-   - Stack
-   - Queue
-   - Hash Table
-- Searching algorithms
-   - Linear Search
-   - Binary Search
-- Sorting algorithms
-   - Bubble Sort 
-   - Selection Sort
-   - Insertion Sort
-- Graphs 
-   - Adjacency Matrix
-   - Adjacency List
-   - Depth First Search
-   - Breadth Fisrt Search
-- Trees
-   - Binary Search Tree
-   - Tree Traversal
-  
-</div>
-
-
-### What is data Structure?
- - Simply, A named location that can be used to store and organize data.
- - Example; 
-    - Consider a list of fruits
-    - The list fruits is used to store and organize data
-
-### What is Algorithms? 
-
-- An algorithm is a set of step-by-step instructions designed to perform a specific task or solve a particular problem.
-- Example;
-  - A navigation system, such as Google Maps, uses algorithms to find the shortest or fastest route from one location to another.
 
 
 ### Dynamic Programming and related problems: 
@@ -59,7 +18,7 @@ The basic idea of dynamic programming is to:
 
 ---
 
-## **1. Dynamic Programming - The Principle of Optimality**
+## 1. Dynamic Programming - The Principle of Optimality
 
 ### Problem
 The principle of optimality states that an optimal solution to a problem can be constructed by using the optimal solutions to its subproblems. This means that in dynamic programming, we can decompose a problem into smaller subproblems, solve each subproblem optimally, and then combine the solutions to get the optimal solution for the original problem.
@@ -177,11 +136,10 @@ public class FibonacciDP {
 1. **Memory Usage**: Dynamic programming often requires extra memory to store intermediate results (e.g., tables or arrays).
 2. **Problem Structure**: Not all problems exhibit optimal substructure and overlapping subproblems, making dynamic programming unsuitable for such problems.
 
----
-
 ### Conclusion:
 Dynamic programming is a robust technique for solving problems that can be broken down into overlapping subproblems with an optimal substructure. By storing the results of solved subproblems, we can avoid recomputation and solve complex problems efficiently.
 
+---
 
 ### 2. Floyd's Algorithm
 
