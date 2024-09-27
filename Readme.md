@@ -774,3 +774,685 @@ public class OptimalBST {
 
 ---
 
+# Longest Common Subsequence (LCS) using Dynamic Programming
+
+## Problem Statement
+
+Given two strings, the **Longest Common Subsequence (LCS)** is the longest subsequence that appears in both strings in the same order, but not necessarily consecutively. 
+
+A **subsequence** is a sequence that can be derived from another string by deleting some characters without changing the order of the remaining characters.
+
+For example:
+- **String 1**: `"ABCBDAB"`
+- **String 2**: `"BDCABA"`
+- **LCS**: `"BCBA"`, length = 4.
+
+The goal is to find the length of the LCS and the actual subsequence.
+
+## Approach
+
+### Dynamic Programming Approach
+
+Dynamic programming is a suitable approach because we can break down the problem into smaller subproblems and use the results of solved subproblems to construct the solution to the larger problem. The idea is to build a **2D matrix (DP table)** where each entry `dp[i][j]` contains the length of the LCS of substrings `X[0...i-1]` and `Y[0...j-1]`.
+
+### Algorithm Steps
+
+1. **Define DP Table**: 
+   - Let `X` and `Y` be the two strings of lengths `m` and `n`, respectively.
+   - Create a `dp` table of size `(m+1) x (n+1)`. Here, `dp[i][j]` stores the length of the LCS of substrings `X[0...i-1]` and `Y[0...j-1]`.
+
+2. **Initialization**:
+   - Initialize the first row and first column to `0` because the LCS of an empty string with any string is `0`.
+
+3. **Filling the DP Table**:
+   - If characters `X[i-1]` and `Y[j-1]` are equal, then:
+     ```
+     dp[i][j] = dp[i-1][j-1] + 1
+     ```
+     This means that the LCS has increased in length by 1 because we found a common character.
+   - If characters `X[i-1]` and `Y[j-1]` are different, then:
+     ```
+     dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+     ```
+     This means we consider the LCS without one of the characters (from either `X` or `Y`).
+
+4. **Backtracking to Find the LCS**:
+   - Once the `dp` table is completely filled, the value `dp[m][n]` contains the length of the LCS.
+   - To find the actual LCS string, we trace back from `dp[m][n]`:
+     - If `X[i-1] == Y[j-1]`, it is part of the LCS, and we move diagonally up (`dp[i-1][j-1]`).
+     - Otherwise, we move in the direction of the larger value (`dp[i-1][j]` or `dp[i][j-1]`).
+
+### Time Complexity
+
+- The time complexity is **O(m * n)**, where `m` is the length of string `X` and `n` is the length of string `Y`. This is because we fill a DP table of size `(m+1) x (n+1)`.
+- The space complexity is **O(m * n)** for storing the DP table.
+
+## Dry Run Example
+
+### Strings
+
+- **String X**: `"ABCBDAB"`
+- **String Y**: `"BDCABA"`
+
+### DP Table
+
+Let's fill in the DP table based on the algorithm.
+
+|   |   | B | D | C | A | B | A |
+|---|---|---|---|---|---|---|---|
+|   | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| A | 0 | 0 | 0 | 0 | 1 | 1 | 1 |
+| B | 0 | 1 | 1 | 1 | 1 | 2 | 2 |
+| C | 0 | 1 | 1 | 2 | 2 | 2 | 2 |
+| B | 0 | 1 | 1 | 2 | 2 | 3 | 3 |
+| D | 0 | 1 | 2 | 2 | 2 | 3 | 3 |
+| A | 0 | 1 | 2 | 2 | 3 | 3 | 4 |
+| B | 0 | 1 | 2 | 2 | 3 | 4 | 4 |
+
+### Backtracking
+
+Starting from `dp[7][6]` (which is 4), trace back to find the LCS:
+- `X[6] == Y[5]` → `B` is part of the LCS.
+- Move to `dp[5][5]`, skip (not part of the LCS).
+- Move to `dp[4][4]` → `A` is part of the LCS.
+- Move to `dp[3][3]` → `C` is part of the LCS.
+- Move to `dp[2][2]` → `B` is part of the LCS.
+
+Thus, the **LCS** is `"BCBA"`.
+
+## Java Code for Longest Common Subsequence
+
+```java
+public class LongestCommonSubsequence {
+
+    // Function to find the length of the Longest Common Subsequence
+    public static String findLCS(String X, String Y) {
+        int m = X.length();
+        int n = Y.length();
+        int[][] dp = new int[m + 1][n + 1];
+
+        // Build the dp matrix
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (X.charAt(i - 1) == Y.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+
+        // The length of the LCS is dp[m][n]
+        int lengthOfLCS = dp[m][n];
+        System.out.println("Length of LCS: " + lengthOfLCS);
+
+        // Backtrack to find the actual LCS string
+        StringBuilder lcs = new StringBuilder();
+        int i = m, j = n;
+        while (i > 0 && j > 0) {
+            if (X.charAt(i - 1) == Y.charAt(j - 1)) {
+                lcs.append(X.charAt(i - 1));
+                i--;
+                j--;
+            } else if (dp[i - 1][j] > dp[i][j - 1]) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+
+        // Since we appended characters from the end, reverse the string
+        return lcs.reverse().toString();
+    }
+
+    public static void main(String[] args) {
+        String X = "ABCBDAB";
+        String Y = "BDCABA";
+
+        String lcs = findLCS(X, Y);
+        System.out.println("LCS: " + lcs);
+    }
+}
+```
+
+### Explanation of the Code
+
+1. **DP Table Initialization**: A 2D array `dp` of size `(m+1) x (n+1)` is created to store the lengths of LCS for all substrings of `X` and `Y`.
+2. **Filling the Table**: The table is filled based on the recurrence relation: 
+   - If `X[i-1] == Y[j-1]`, the current cell value is updated as `dp[i][j] = dp[i-1][j-1] + 1`.
+   - Otherwise, it takes the maximum of the previous subproblems (`dp[i-1][j]` or `dp[i][j-1]`).
+3. **Backtracking**: The actual LCS is found by backtracking from the last cell of the DP table and building the LCS string.
+4. **Printing the LCS**: The LCS string is printed after backtracking.
+
+### Time Complexity
+
+- **Time Complexity**: **O(m * n)**, where `m` and `n` are the lengths of strings `X` and `Y`. This is because we iterate through a 2D matrix of size `(m+1) x (n+1)`.
+- **Space Complexity**: **O(m * n)** for storing the DP table.
+
+---
+
+
+# Matrix Chain Multiplication using Dynamic Programming
+
+## Problem Statement
+
+The **Matrix Chain Multiplication** problem is a classic optimization problem where we are given a sequence of matrices, and we want to find the most efficient way to multiply these matrices together. The goal is to minimize the number of scalar multiplications.
+
+**Note:** Matrix multiplication is associative, i.e., `(A * B) * C = A * (B * C)`, but the number of operations involved in different parenthesizations can vary. Hence, the challenge is to find the most efficient parenthesization.
+
+Given `n` matrices `A1, A2, ..., An`, where matrix `Ai` has dimensions `p[i-1] x p[i]` (for i = 1 to n), the task is to compute the product `A1 * A2 * ... * An` in such a way that minimizes the number of scalar multiplications.
+
+### Example
+
+Suppose we are given 4 matrices:
+- **A1**: 10x20
+- **A2**: 20x30
+- **A3**: 30x40
+- **A4**: 40x30
+
+The number of ways to parenthesize these matrices is `(A1 * (A2 * (A3 * A4)))`, `((A1 * A2) * (A3 * A4))`, etc. Each way results in a different number of scalar multiplications, and our goal is to minimize this count.
+
+## Approach
+
+### Dynamic Programming Approach
+
+To solve this using dynamic programming, we:
+1. Define the **subproblems**: Find the minimum number of multiplications needed to multiply matrices from `i` to `j`.
+2. Use a **table (dp)** to store the results of subproblems.
+3. Solve larger problems using the results of smaller problems.
+
+### Algorithm Steps
+
+1. **Define the DP Table**:
+   - Let `dp[i][j]` represent the minimum number of scalar multiplications needed to multiply the matrices from `i` to `j`.
+   - The size of the DP table is `(n+1) x (n+1)`.
+
+2. **Initialization**:
+   - If there's only one matrix (`i == j`), no multiplication is required. Hence, `dp[i][i] = 0`.
+
+3. **Filling the DP Table**:
+   - For each possible length of the matrix chain (`l`), from `2` to `n`, compute the minimum number of multiplications needed for every subchain `(i, j)` of that length.
+   - For each pair `(i, j)`, check all possible splits `k` between `i` and `j`, and compute:
+     ```
+     dp[i][j] = min(dp[i][k] + dp[k+1][j] + cost of multiplying matrices Ai...Ak and Ak+1...Aj)
+     ```
+     The cost of multiplying these two subchains is given by the formula:
+     ```
+     cost = p[i-1] * p[k] * p[j]
+     ```
+
+4. **Final Solution**:
+   - The result will be stored in `dp[1][n]`, representing the minimum number of multiplications needed to multiply matrices from `1` to `n`.
+
+### Time Complexity
+
+- The time complexity is **O(n^3)**, where `n` is the number of matrices. This is because we fill an `n x n` DP table and for each pair `(i, j)` we iterate over all possible splits `k` between `i` and `j`.
+- The space complexity is **O(n^2)** for storing the DP table.
+
+## Dry Run Example
+
+Given matrices with dimensions:
+- A1: 10x20
+- A2: 20x30
+- A3: 30x40
+- A4: 40x30
+
+### Matrix Dimensions
+The dimension array `p[]` will be: `[10, 20, 30, 40, 30]`.
+
+### DP Table Initialization
+```
+dp = [
+    [0, 0, 0, 0, 0], 
+    [0, 0, 0, 0, 0], 
+    [0, 0, 0, 0, 0], 
+    [0, 0, 0, 0, 0], 
+    [0, 0, 0, 0, 0]
+]
+```
+
+### Step-by-Step Filling of the DP Table
+
+1. For `l = 2` (chain length 2):
+   - Compute `dp[1][2]` for matrices A1 and A2:
+     ```
+     dp[1][2] = 10 * 20 * 30 = 6000
+     ```
+   - Compute `dp[2][3]` for matrices A2 and A3:
+     ```
+     dp[2][3] = 20 * 30 * 40 = 24000
+     ```
+   - Compute `dp[3][4]` for matrices A3 and A4:
+     ```
+     dp[3][4] = 30 * 40 * 30 = 36000
+     ```
+
+2. For `l = 3` (chain length 3):
+   - Compute `dp[1][3]` for matrices A1, A2, A3:
+     ```
+     dp[1][3] = min((10 * 20 * 40) + dp[2][3], (10 * 30 * 40) + dp[1][2]) = min(8000 + 24000, 18000 + 6000) = 18000
+     ```
+   - Compute `dp[2][4]` for matrices A2, A3, A4:
+     ```
+     dp[2][4] = min((20 * 30 * 30) + dp[3][4], (20 * 40 * 30) + dp[2][3]) = min(18000 + 36000, 24000 + 24000) = 36000
+     ```
+
+3. For `l = 4` (chain length 4):
+   - Compute `dp[1][4]` for matrices A1, A2, A3, A4:
+     ```
+     dp[1][4] = min((10 * 20 * 30) + dp[2][4], (10 * 30 * 30) + dp[1][3]) = min(6000 + 36000, 9000 + 18000) = 27000
+     ```
+
+Final DP table:
+```
+dp = [
+    [0, 0, 0, 0, 0], 
+    [0, 0, 6000, 18000, 27000], 
+    [0, 0, 0, 24000, 36000], 
+    [0, 0, 0, 0, 36000], 
+    [0, 0, 0, 0, 0]
+]
+```
+
+So, the minimum number of scalar multiplications is `27000`.
+
+## Java Code for Matrix Chain Multiplication
+
+```java
+public class MatrixChainMultiplication {
+
+    // Function to find the minimum cost of matrix chain multiplication
+    public static int matrixChainOrder(int[] p, int n) {
+        int[][] dp = new int[n][n];
+
+        // Initializing dp[i][i] = 0 because single matrix multiplication cost is 0
+        for (int i = 1; i < n; i++) {
+            dp[i][i] = 0;
+        }
+
+        // l is chain length
+        for (int l = 2; l < n; l++) {
+            for (int i = 1; i < n - l + 1; i++) {
+                int j = i + l - 1;
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int k = i; k < j; k++) {
+                    int cost = dp[i][k] + dp[k+1][j] + p[i-1] * p[k] * p[j];
+                    if (cost < dp[i][j]) {
+                        dp[i][j] = cost;
+                    }
+                }
+            }
+        }
+
+        // Return the minimum number of multiplications needed
+        return dp[1][n-1];
+    }
+
+    public static void main(String[] args) {
+        int[] p = {10, 20, 30, 40, 30};
+        int n = p.length;
+
+        System.out.println("Minimum number of multiplications is " + matrixChainOrder(p, n));
+    }
+}
+```
+
+### Explanation of the Code
+
+1. **Input**: The input `p[]` represents the dimensions of the matrices, where `Ai` is a `p[i-1] x p[i]` matrix.
+2. **DP Initialization**: We initialize the `dp[i][i]` as `0` because no multiplication is needed for a single matrix.
+3. **DP Table Filling**: We fill the DP table by considering chains of increasing length (`l`), calculating the cost of each subchain `(i, j)` and finding the split `k` that minimizes the multiplication cost.
+4. **Final Result**: The minimum cost of multiplying all matrices is stored in `dp[1][n-1]`, which is returned as the result.
+
+### Time Complexity
+
+- **Time Complexity**: **O(n^3)**, where `n` is the number of matrices (length of array `p[]`).
+- **Space Complexity**: **O(n^2)** for the `dp` table.
+  
+---
+
+# Travelling Salesperson Problem (TSP) using Dynamic Programming
+
+## Problem Statement
+
+The **Travelling Salesperson Problem (TSP)** is a classic optimization problem where a salesperson needs to visit `N` cities exactly once, returning to the starting city, while minimizing the total travel cost. The cost between two cities is given, and the objective is to find the shortest possible tour that visits all the cities and returns to the origin.
+
+This problem can be formally described as:
+
+- Given a set of cities and a distance matrix `dist[i][j]`, which represents the cost of traveling from city `i` to city `j`, find the minimum cost tour that starts at a given city, visits every other city exactly once, and returns to the starting city.
+
+### Example
+
+Consider 4 cities (0, 1, 2, 3) and the following distance matrix:
+
+|   | 0  | 1  | 2  | 3  |
+|---|----|----|----|----|
+| 0 | 0  | 10 | 15 | 20 |
+| 1 | 10 | 0  | 35 | 25 |
+| 2 | 15 | 35 | 0  | 30 |
+| 3 | 20 | 25 | 30 | 0  |
+
+The goal is to start from city 0, visit all cities exactly once, and return to city 0 while minimizing the total travel cost.
+
+## Approach
+
+### Dynamic Programming Approach
+
+Dynamic programming can be used to solve the TSP problem by storing solutions of subproblems. The idea is to break down the problem into smaller subproblems by considering subsets of cities that have already been visited and then adding new cities to the tour.
+
+To solve TSP using dynamic programming, we use a **bitmasking** technique to represent the set of visited cities.
+
+### Key Definitions
+
+- **State Representation**:
+  - `dp[mask][i]`: This represents the minimum cost of visiting the subset of cities represented by `mask`, ending at city `i`.
+  - `mask` is a bitmask where each bit represents whether a city has been visited or not. If city `j` has been visited, the `j`th bit of `mask` will be `1`; otherwise, it will be `0`.
+  - `i` is the last city visited in the current subset.
+
+- **Transition**:
+  - We transition from one state `dp[mask][i]` by visiting an unvisited city `j`. The transition formula is:
+    ```
+    dp[mask | (1 << j)][j] = min(dp[mask | (1 << j)][j], dp[mask][i] + dist[i][j])
+    ```
+    Here, `mask | (1 << j)` represents adding city `j` to the set of visited cities, and `dist[i][j]` is the cost of traveling from city `i` to city `j`.
+
+### Algorithm Steps
+
+1. **Define DP Table**:
+   - `dp[mask][i]`: Minimum cost of visiting the cities in subset `mask` and ending at city `i`.
+   - The table size is `2^N x N`, where `N` is the number of cities.
+
+2. **Initialization**:
+   - Start at city 0, so `dp[1][0] = 0` (i.e., visiting city 0 only has no cost).
+
+3. **Fill the DP Table**:
+   - For each subset of cities (represented by `mask`), calculate the cost of transitioning from city `i` to city `j` and update `dp[mask][j]`.
+
+4. **Final Solution**:
+   - The final answer will be the minimum cost to visit all cities and return to the starting city:
+     ```
+     min(dp[full_mask][i] + dist[i][0]) for all i
+     ```
+     where `full_mask = (1 << N) - 1` represents the bitmask where all cities have been visited.
+
+### Time Complexity
+
+- **Time Complexity**: **O(N^2 * 2^N)**, where `N` is the number of cities. This is because there are `2^N` subsets of cities, and for each subset, we check all possible transitions between `N` cities.
+- **Space Complexity**: **O(N * 2^N)** for storing the DP table.
+
+## Dry Run Example
+
+For the distance matrix:
+
+```
+|   | 0  | 1  | 2  | 3  |
+|---|----|----|----|----|
+| 0 | 0  | 10 | 15 | 20 |
+| 1 | 10 | 0  | 35 | 25 |
+| 2 | 15 | 35 | 0  | 30 |
+| 3 | 20 | 25 | 30 | 0  |
+```
+
+### Step-by-Step Calculation:
+
+1. **Initialization**:
+   ```
+   dp[1][0] = 0
+   dp[mask][i] = ∞ for all other mask, i
+   ```
+
+2. **Transitions**:
+   - From city 0 to city 1, 2, 3:
+     ```
+     dp[3][1] = min(dp[3][1], dp[1][0] + 10) = 10
+     dp[5][2] = min(dp[5][2], dp[1][0] + 15) = 15
+     dp[9][3] = min(dp[9][3], dp[1][0] + 20) = 20
+     ```
+
+3. **Continue Transitions** for each mask and city pair, filling the DP table until the final subset is reached.
+
+4. **Final Answer**:
+   - The final answer is found by returning to the starting city from any city:
+     ```
+     min(dp[15][1] + dist[1][0], dp[15][2] + dist[2][0], dp[15][3] + dist[3][0])
+     ```
+
+## Java Code for TSP
+
+```java
+import java.util.Arrays;
+
+public class TSP {
+
+    // Number of cities
+    private static final int N = 4;
+    // Large number to represent infinity (no possible path)
+    private static final int INF = Integer.MAX_VALUE;
+    
+    // Distance matrix
+    private static final int[][] dist = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+
+    // DP table to store the minimum cost
+    private static int[][] dp = new int[1 << N][N];
+
+    // Function to solve TSP using Dynamic Programming with Bitmasking
+    public static int tsp(int mask, int pos) {
+        // Base case: All cities have been visited
+        if (mask == (1 << N) - 1) {
+            // Return to the starting city (0)
+            return dist[pos][0];
+        }
+
+        // If already computed, return the stored result
+        if (dp[mask][pos] != -1) {
+            return dp[mask][pos];
+        }
+
+        // Initialize result to infinity
+        int ans = INF;
+
+        // Try going to all other cities from the current city
+        for (int city = 0; city < N; city++) {
+            // Check if the city is already visited
+            if ((mask & (1 << city)) == 0) {
+                // Recursive call to visit the next city
+                int newAns = dist[pos][city] + tsp(mask | (1 << city), city);
+                ans = Math.min(ans, newAns);
+            }
+        }
+
+        // Store the result and return it
+        return dp[mask][pos] = ans;
+    }
+
+    public static void main(String[] args) {
+        // Initialize DP table with -1 (unvisited)
+        for (int[] row : dp) {
+            Arrays.fill(row, -1);
+        }
+
+        // Start the TSP from city 0 with only city 0 visited (mask = 1)
+        int result = tsp(1, 0);
+        System.out.println("The minimum cost of the tour is: " + result);
+    }
+}
+```
+
+### Explanation of the Code
+
+1. **Input**: The input consists of `N` cities and a distance matrix `dist[][]` that holds the cost of traveling between any pair of cities.
+2. **Bitmask Representation**: `mask` represents the set of visited cities. For example, `mask = 3` (binary `0011`) means cities 0 and 1 have been visited.
+3. **Recursive TSP**: The recursive `tsp()` function computes the minimum cost of visiting the remaining cities using bitmasking and dynamic programming.
+4. **Base Case**: When all cities are visited, return to the starting city and compute the total cost.
+5. **DP Table**: The DP table `dp[][]` stores results of subproblems to avoid recomputation.
+
+### Time Complexity
+
+- **Time Complexity**: **O(N^2 * 2^N)**, where `N` is the number of cities. There are `2^N` subsets of cities, and for each subset, we check all `N` cities.
+- **Space Complexity**: **O(N * 2^N)** for storing the DP table.
+
+### Example Output
+
+For the example with 4 cities, the output will be:
+
+```
+The minimum cost of the tour is: 80
+```
+
+---
+
+
+# Knapsack Problem and Memory Functions using Dynamic Programming
+
+## Problem Statement
+
+The **Knapsack Problem** is a combinatorial optimization problem where you have to maximize the value of items that can be carried in a knapsack of limited capacity. Each item has a weight and a value, and you must decide which items to include in the knapsack such that the total weight does not exceed the knapsack's capacity, and the total value is maximized.
+
+There are two main versions of the Knapsack Problem:
+1. **0/1 Knapsack**: Each item can either be included in the knapsack or excluded (i.e., you can’t include fractional parts of items).
+2. **Fractional Knapsack**: You are allowed to take fractions of items, but we won’t cover this here since dynamic programming is typically used for the 0/1 version.
+
+### Example
+
+Consider the following items:
+- Weights: `[2, 3, 4, 5]`
+- Values: `[3, 4, 5, 6]`
+- Capacity of the knapsack: `5`
+
+You need to select the items that maximize the total value without exceeding the knapsack’s weight capacity.
+
+### Approach
+
+The problem can be solved using **Dynamic Programming**. We define a 2D `dp` table where `dp[i][w]` represents the maximum value that can be obtained using the first `i` items with a total weight limit `w`.
+
+### Recursive Relation
+
+The idea is to solve the problem for each subproblem, i.e., for each item, you either:
+1. **Include the item**: Add the value of the item and solve the subproblem with reduced capacity (i.e., subtract the item's weight from the knapsack's capacity).
+2. **Exclude the item**: Do not include the item, and the problem reduces to solving for the remaining items with the same capacity.
+
+Mathematically:
+- If the weight of item `i` is less than or equal to the current capacity `w`, then:
+  ```
+  dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight[i]] + value[i])
+  ```
+  - **dp[i-1][w]** means excluding the item.
+  - **dp[i-1][w-weight[i]] + value[i]** means including the item.
+  
+- If the weight of item `i` exceeds `w`:
+  ```
+  dp[i][w] = dp[i-1][w]
+  ```
+
+### Algorithm Steps
+
+1. **Define DP Table**:
+   - Let `dp[i][w]` be the maximum value that can be achieved using the first `i` items with a total weight limit `w`.
+   - The table size will be `(n+1) x (capacity+1)` where `n` is the number of items and `capacity` is the maximum weight limit of the knapsack.
+
+2. **Base Case**:
+   - If there are no items or the capacity is 0, the maximum value is 0:
+     ```
+     dp[i][0] = dp[0][w] = 0
+     ```
+
+3. **Transition**:
+   - For each item `i` and weight `w`, calculate the maximum value by either including or excluding the item:
+     ```
+     if (weight[i] <= w)
+         dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight[i]] + value[i])
+     else
+         dp[i][w] = dp[i-1][w]
+     ```
+
+4. **Final Solution**:
+   - The solution will be stored in `dp[n][capacity]`, which represents the maximum value obtained by considering all `n` items and the knapsack's weight capacity.
+
+### Time Complexity
+
+- **Time Complexity**: **O(n * W)**, where `n` is the number of items and `W` is the capacity of the knapsack. This is because we are filling a DP table of size `(n+1) x (W+1)`.
+- **Space Complexity**: **O(n * W)** for the DP table.
+
+## Dry Run Example
+
+### Input:
+- Weights: `[2, 3, 4, 5]`
+- Values: `[3, 4, 5, 6]`
+- Capacity: `5`
+
+### DP Table Construction:
+
+| i (Item) | w=0 | w=1 | w=2 | w=3 | w=4 | w=5 |
+|----------|-----|-----|-----|-----|-----|-----|
+| 0        |  0  |  0  |  0  |  0  |  0  |  0  |
+| 1        |  0  |  0  |  3  |  3  |  3  |  3  |
+| 2        |  0  |  0  |  3  |  4  |  4  |  7  |
+| 3        |  0  |  0  |  3  |  4  |  5  |  7  |
+| 4        |  0  |  0  |  3  |  4  |  5  |  7  |
+
+The maximum value we can get with a knapsack of capacity 5 is **7**, achieved by taking the first two items (weights 2 and 3).
+
+## Java Code for 0/1 Knapsack Problem
+
+```java
+public class Knapsack {
+    
+    // Function to solve the Knapsack problem using DP
+    public static int knapsack(int[] weights, int[] values, int capacity) {
+        int n = weights.length;
+        int[][] dp = new int[n + 1][capacity + 1];
+        
+        // Fill the dp array
+        for (int i = 1; i <= n; i++) {
+            for (int w = 0; w <= capacity; w++) {
+                if (weights[i - 1] <= w) {
+                    // Either include the current item or exclude it
+                    dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - weights[i - 1]] + values[i - 1]);
+                } else {
+                    // Cannot include the item, just take the previous value
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+        
+        // The answer is the maximum value that can be obtained with the given capacity
+        return dp[n][capacity];
+    }
+    
+    public static void main(String[] args) {
+        int[] weights = {2, 3, 4, 5};
+        int[] values = {3, 4, 5, 6};
+        int capacity = 5;
+        
+        int result = knapsack(weights, values, capacity);
+        System.out.println("Maximum value in Knapsack: " + result);
+    }
+}
+```
+
+### Explanation of the Code
+
+1. **Input**: The `weights[]` array represents the weights of the items, and `values[]` represents their respective values. `capacity` is the maximum weight the knapsack can carry.
+2. **DP Table Construction**: The `dp` array is filled by solving subproblems, considering whether to include or exclude each item based on its weight.
+3. **Transition**: The maximum value for each subproblem is calculated using the formula:
+   - If the item's weight is less than or equal to the remaining capacity, calculate the maximum of including or excluding it.
+   - If the item's weight is greater than the current capacity, exclude the item.
+4. **Final Result**: The maximum value obtained for the given capacity is stored in `dp[n][capacity]`.
+
+### Time Complexity
+
+- **Time Complexity**: **O(n * W)**, where `n` is the number of items and `W` is the capacity of the knapsack.
+- **Space Complexity**: **O(n * W)** for the DP table.
+
+### Example Output
+
+```
+Maximum value in Knapsack: 7
+```
+
+This code efficiently solves the 0/1 Knapsack problem using dynamic programming with a time complexity of **O(n * W)**.
